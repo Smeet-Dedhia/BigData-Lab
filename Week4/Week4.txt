@@ -1,0 +1,90 @@
+vi mapper.py
+vi reducer.py
+vi input.py
+cat input.txt |python3 mapper.py |sort |python3 reducer.py
+
+#!/usr/bin/python
+"""mapper.py"""
+
+import sys
+#input comes from STDIN
+for line in sys.stdin:
+#remove leading and trailing whitespace
+     line=line.strip()
+#split the line into words
+     words=line.split()
+#increase counters
+     for word in words:
+#write the results to STDOUT
+#tab-delimited; the trivial word count is 1
+         print('%s\t%s'%(word,1))
+         
+         
+#!/usr/bin/python3
+"""reducer3.py"""
+import sys
+
+current_word = None
+current_count = 0
+word = None
+for line in sys.stdin:
+	line = line.strip()
+	#parse the input we got from mapper.py
+	word,count = line.split('\t',1)
+	try:
+		count = int(count)
+	except ValueError:
+		continue
+	if current_word == word:
+		current_count += count
+	else:
+		if current_word:
+			#write result to STDOUT
+			print('%s\t%s' % (current_word, current_count))
+		current_count = count
+		current_word = word
+if current_word == word:
+	print('%s\t%s' % (current_word,current_count))
+
+
+for HDFS execution
+transfer input.txt to HDFS
+we use hadoop streaming jar
+/home/hdoop/hadoop-3.3.4/bin/hadoop jar '/home/hdoop/hadoop-3.3.4/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar' \
+> -file /home/hdoop/mapper.py -mapper mapper.py \
+> -file /home/hdoop/reducer.py -reducer reducer.py \
+> -input /user/l1.txt
+> -output /output-path/
+	
+Q1-Extract Dates from dataset	
+//Extract years from dataset & save in years.txt
+cut -d "," -f 1 earthquakes.csv |cut -d "/" -f 3,3 |cut -d " " -f 1 > years.txt
+//Extract months from dataset
+cut -d "," -f 1 earthquakes.csv |cut -d "/" -f 1 > months.txt
+//Extract days from dataset\
+cut -d "," -f 1 earthquakes.csv |cut -d "/" -f 2 > days.txt
+
+Q2-Find years, months and dates with most earthquakes
+//Find year count
+head -50000 years.txt |python3 mapper.py |sort |python3 reducer.py >yearCount.txt
+//Find month count
+head -50000 months.txt |python3 mapper.py |sort |python3 reducer.py >monthCount.txt
+//Find day count
+head -50000 days.txt |python3 mapper.py |sort |python3 reducer.py >dayCount.txt
+
+Q3- Analze Magnitudes of earthquakes
+//Extract Magnitude from dataset
+cut -d "," -f 5 earthquakes.csv > magnitudes.txt
+//Find frequency of magnitudes
+head -50000 magnitudes.txt |python3 mapper.py |sort |python3 reducer.py >magnitudeCount.txt
+
+Q4- Find minimum & maximum depth of earthquakes
+cut -d "," -f 4 earthquakes.csv |sort -n |head -1
+Min = 0
+cut -d "," -f 4 earthquakes.csv |sort -n |tail -1
+Max = 244
+
+Q5- Round lat & long to int and find most susseptible regions
+cut -d "," -f 2,3 earthquakes.csv |sed -E 's/([0-9]*\.[0-9])[0-9]/\1/' > latlong.txt
+head -50000 latlong.txt |python3 mapper.py |sort |python3 reducer.py >latlongCount.txt
+ANS: 34.7,24.04, FREQ=10

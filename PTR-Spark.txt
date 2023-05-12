@@ -1,0 +1,111 @@
+####Spark RDDs
+
+val inputfile = sc.textFile("input.txt")
+
+val data = sc.parallelize(List(10,20,30)) 
+
+val rdd = sc.parallelize(
+  Seq(
+    ("John", "Manager", 38),
+    ("Mary", "Director", 45),
+    ("Sally", "Engineer", 30)
+  )
+)
+df1 = spark.createDataFrame(rdd)
+val df = rdd.toDF("Name", "Job", "Age")
+
+val counts = inputfile.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_+_);
+
+val filterfunc = data.filter(x => x!=35) 
+
+val countfunc = data.count()
+val distinctfunc = data.distinct()  
+
+val unionfunc = data1.union(data2) 
+val intersectfunc = data1.intersection(data2) 
+
+val sortfunc = data.sortByKey()
+
+val groupfunc = data.groupByKey()
+
+val reducerf=mapf.reduceByKey(_+_)
+val reducefunc = data.reduceByKey((value, x) => (value + x))  
+val reducerf=mapf.countByValue()
+reducerf.collect;
+
+ val takefunc = data.take(3) 
+
+###Spark SQL
+
+val emp_dept_df = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("/Smeet-200968236/Department_Dataset.csv")
+
+emp_dept_df.printSchema()
+
+emp_dept_df.show(false)
+
+df.filter(df("state") === "OH").show(false)
+
+val emp_sal_dept_df = emp_sal_df.join(emp_dept_df, emp_sal_df("ID") === emp_dept_df("ID"), "inner")
+
+val emp_deptwise_sal_df = emp_sal_dept_df.groupBy("Dept_name").sum("Salary")
+
+val emp_genderwise_count_df = emp_sal_dept_df.groupBy("Gender").count()
+
+
+###Scala Functions
+
+var myMul = (x:Int, y:Int) => x*y
+
+def sum (num1 : Int)(num2 : Int) : Int = num1 + num2
+
+val Sqrt: PartialFunction[Double,Double] = {
+	case d: Double if d > 0 => Math.sqrt(d)
+}
+
+val list: List[Double] = List(2,4,16,-9)
+
+list.map(Math.sqrt)
+
+list.collect(Sqrt)
+
+
+# Anonymous function
+addOne = lambda x: x + 1
+
+
+###PySpark
+from pyspark.sql.functions import approx_count_distinct, collect_list, collect_set, avg, count, countDistinct
+
+from pyspark.sql.functions import *
+from pyspark import SparkContext
+sc = SparkContext("local", "First App")
+
+lines = sc.textFile("/user/in")
+words = lines.flatMap(lambda line: line.split(" "))
+wc = words.countByValue()
+for word, count in wc.items():
+    print("{}:{}".format(word, count))
+sc.stop()
+
+numBs = logData.filter(lambda s: 'b' in s).count()
+
+rdd = sc.parallelize([])
+
+def f(x): print(x)
+fore = words.foreach(f)
+
+words = sc.textFile("200968216/tram").flatMap(lambda line: line.split(" "))
+a = words.map(lambda word: (word, 1))
+b = a.reduceByKey(lambda a,b:a+b)
+
+df.select(max("salary")).show(truncate=False)
+
+df = spark.read.options(inferSchema='True',header='True', delimiter=',').csv("200968216/Employee_Salary_Dataset.csv")
+
+df.groupby("Dept_name").agg(avg("Salary")).show()
+
+from pyspark.sql.functions import countDistinct 
+df.agg(countDistinct('location')).collect()
+
+from pyspark.sql.functions import col
+df2.withColumn("sum", col("Age") + col("Experience_Years")).show()

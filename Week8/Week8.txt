@@ -1,0 +1,52 @@
+Q1] Demonstrate the basic math operations like addition, multiplication, substraction and division and perform aggregate functions (apprrox_count_dinstinct(), collect_list(), collect_set(), avg(), count(), countDistinct()) by utilizing Spark Scala
+
+
+
+
+Q2] Demonstrate the built in functions using Scala by creating an array, perform the following functions:
+
+val a1 = Array(10,20,30,40,50)
+val a2 = Array(1,2,3,4,5)
+
+i)Non Parameterized Function
+a1.max
+
+ii) Parameterized Function
+Array.concat(a1,a2)
+
+iii) Recursion Function
+def fact(n: Int): Int =
+    {
+        if (n == 0)
+            return 1
+        else
+            return n * factorial(n-1)
+    }
+fact(a1.min)
+
+iv) Function Parameter with Default Value
+val a1 = Array(10,20,30,40,50)
+val a1 = Array(10,20,30,40,50)
+
+v) Anonymous Functions
+var myMul = (x:Int, y:Int) => x*y
+myMul(a1.min, a2.min)
+
+vi) Functions with Map Method
+val a2_sqr = a2.map(x => x*x)
+
+vii) Currying Functions
+def myAdd(x: Int, y: Int) = x + y;
+myAdd(a1.max,a2.max)
+
+viii) Nested Functions
+def factorial(i: Int): Int = {
+      def fact(i: Int, accumulator: Int): Int = {
+         if (i <= 1)
+            accumulator
+         else
+            fact(i - 1, i * accumulator)
+      }
+      fact(i, 1)
+   }
+factorial(5)

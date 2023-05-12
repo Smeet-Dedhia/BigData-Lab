@@ -1,0 +1,14 @@
+hi
+hello
+world
+this
+is
+a
+program
+for 
+bda
+lab
+in 
+this
+week
+lab

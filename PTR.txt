@@ -1,0 +1,141 @@
+##Week4- Mapreduce python
+
+cat input.txt |python3 mapper.py |sort |python3 reducer.py
+
+///////////////////////////////////////
+import sys
+
+ign = True;
+
+for line in sys.stdin:
+    if ign:
+        ign=False
+        continue
+    line = line.strip();
+    row = line.split(',');
+    print("%s\t%s"%(row[5],row[0]))
+//////////////////////////////////////
+import sys
+
+prev_date = None
+prev_count =0
+
+for line in sys.stdin:
+    line = line.strip();
+    date,rooms = line.split('\t')
+    rooms = int(rooms)
+    if prev_date == None:
+        prev_date = date
+        prev_count += rooms
+    elif prev_date == date:
+        prev_count += rooms;
+    else:
+        print("%s\t%d"%(prev_date,prev_count))
+        prev_date = date
+        prev_count = rooms
+if prev_date:
+    print("%s\t%d"%(prev_date,prev_count))
+/////////////////////////////////////
+
+for HDFS execution
+transfer input.txt to HDFS
+we use hadoop streaming jar
+/home/hdoop/hadoop-3.3.4/bin/hadoop jar '/home/hdoop/hadoop-3.3.4/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar' \
+> -file /home/hdoop/mapper.py -mapper mapper.py \
+> -file /home/hdoop/reducer.py -reducer reducer.py \
+> -input /user/l1.txt
+> -output /output-path/
+
+
+##Week5- Pig
+
+01. Run Pig
+pig -x local
+
+02. Load
+data = LOAD 'local_csv_path.csv' using PigStorage(',') AS (DATETIME:chararray, LAT:int, LONG:int);
+
+03. ForEach (Select only few columns)
+selected_cols = FOREACH data GENERATE MAGNITUDE;
+cols = FOREACH student GENERATE name,id,age;
+
+04. Filter
+data_filtered = FILTER selected_cols BY LAT>6;
+res  = FILTER locations BY city == 'Manipal';
+
+05. Distinct
+res = DISTINCT age;
+
+06. Join
+res = JOIN customers BY id, ratings BY id;
+res = JOIN customers BY id RIGHT OUTER, ratings by id;
+
+07. Cogroup
+res = COGROUP student_details BY Age, employee_details BY Age
+
+08. Group
+res = GROUP student_details by AGE;
+res = GROUP student_details by (AGE,CITY);
+
+B = group A by neid;
+C = foreach B generate A.neid,AVG(A.throughput);
+
+09. Union
+res = UNION student1, student2;
+
+10. Split
+SPLIT students INTO student1 if age<23, student2 if (age>25 and age<20);
+
+11. Order By
+res = ORDER students BY age ASC;
+
+12. Dump
+DUMP data;
+https://youtu.be/DflrXqS3UdE
+
+13. Store
+STORE data INTO 'hdfs://folder-path/' USING PigStorage(',');
+STORE data INTO 'file://folder-path/' USING PigStorage(',');
+
+##Week10- HIVE
+
+#1 To Enter into Hive: cd /usr/local/hive/Apache-hive-3.1.2-bin
+#2 To initiate Schema: bin/schematool -dbType derby -initSchema
+#3 If error: rm -Rf metastore_db
+#4 To Start the Server: bin/hiveserver2
+#5 Wait until 3 Hive Session ID Generated
+#6 Open New Terminal
+#7 Enter into Hive: cd /usr/local/hive/Apache-hive-3.1.2-bin
+#8 Go to Beeline Hive: bin/beeline -n hdoop -u jdbc:hive2://localhost:10000
+
+show databases;
+
+create database school;
+use school;
+
+create table if not exists student(name string, age int, id int)
+//partitioned by (Gender string)
+row format delimited
+field terminated by ','
+lines terminated by '\n';
+
+describe student;
+
+load data local inpath 'file_name.txt'
+overwrite into table student;
+
+select name,id,age from student;
+
+select s.id, s.name, d.deptID, d.dname
+FROM Student s JOIN Department d
+ON (s.id == d.id);
+
+ALTER TABLE name RENAME TO new_name
+ALTER TABLE name ADD COLUMNS (col_spec[, col_spec ...])
+ALTER TABLE name DROP [COLUMN] column_name
+ALTER TABLE name CHANGE column_name new_name new_type
+ALTER TABLE name REPLACE COLUMNS (col_spec[, col_spec ...])
+
+SELECT * FROM employee WHERE salary>30000;
+SELECT Id, Name, Dept FROM employee ORDER BY DEPT;
+SELECT Dept,count(*) FROM employee GROUP BY DEPT;

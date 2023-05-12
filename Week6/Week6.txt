@@ -1,0 +1,145 @@
+spark-shell
+
+//loading file which is located on hadoop cluster
+val text=sc.textFile("/user/in")
+
+val count = text.flatMap(line=> line.split(" "))
+
+count.collect;
+
+//Array[String] = Array(hello, hi, hi, sir, hello, sir, good, day, bad, day)
+
+val mapf = count.map(word=>(word,1))
+
+val reducerf=mapf.reduceByKey(_+_)
+
+reducerf.collect;
+//Array[(String, Int)] = Array((sir,2), (day,2), (hello,2), (hi,2), (bad,1), (good,1))
+
+val reducerf=mapf.countByValue()
+//scala.collection.Map[(String, Int),Long] = Map((hi,1) -> 2, (good,1) -> 1, (bad,1) -> 1, (hello,1) -> 2, (sir,1) -> 2, (day,1) -> 2)
+
+//salaries dataset and get dept wise salaries and sum of salaries
+//Deptwise male and female
+
+
+
+hdfs dfs -put '/home/hdoop/Downloads/BDA-Lab/Week6/Department_Dataset.csv' /Smeet-200968236/Department_Dataset.csv
+
+val emp_dept_df = spark.read.csv("/Smeet-200968236/Department_Dataset.csv")
+
+val emp_dept_df = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("/Smeet-200968236/Department_Dataset.csv")
+
+
+emp_dept_df.printSchema()
+
+emp_dept_df.collect()
+
+emp_dept_df.show(false)
++---+---------+---------+---------------+
+|ID |Dept_name|location |travel_required|
++---+---------+---------+---------------+
+|1  |HR       |Pune     |yes            |
+|2  |Finance  |Bangalore|no             |
+|3  |Finance  |Bangalore|no             |
+|4  |Finance  |Pune     |no             |
+|5  |Tech     |Mumbai   |no             |
+|6  |Tech     |Pune     |no             |
+|7  |Tech     |Bangalore|yes            |
+|8  |HR       |Bangalore|no             |
+|9  |HR       |Pune     |no             |
+|10 |HR       |Pune     |no             |
+|11 |HR       |Mumbai   |no             |
+|12 |HR       |Mumbai   |yes            |
+|13 |Finance  |Bangalore|yes            |
+|14 |Tech     |Bangalore|yes            |
+|15 |Tech     |Mumbai   |yes            |
+|16 |Tech     |Pune     |yes            |
+|17 |Tech     |Bangalore|no             |
+|18 |Finance  |Mumbai   |no             |
+|19 |HR       |Mumbai   |no             |
+|20 |Finance  |Bangalore|no             |
++---+---------+---------+---------------+
+
+hdfs dfs -put '/home/hdoop/Downloads/BDA-Lab/Week6/Employee_Salary_Dataset.csv' /Smeet-200968236/Employee_Salary_Dataset.csv
+
+val emp_sal_df = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("/Smeet-200968236/Employee_Salary_Dataset.csv")
+
+emp_sal_df.show(false)
++---+----------------+---+------+-------+
+|ID |Experience_Years|Age|Gender|Salary |
++---+----------------+---+------+-------+
+|1  |5               |28 |Female|250000 |
+|2  |1               |21 |Male  |50000  |
+|3  |3               |23 |Female|170000 |
+|4  |2               |22 |Male  |25000  |
+|5  |1               |17 |Male  |10000  |
+|6  |25              |62 |Male  |5001000|
+|7  |19              |54 |Female|800000 |
+|8  |2               |21 |Female|9000   |
+|9  |10              |36 |Female|61500  |
+|10 |15              |54 |Female|650000 |
+|11 |4               |26 |Female|250000 |
+|12 |6               |29 |Male  |1400000|
+|13 |14              |39 |Male  |6000050|
+|14 |11              |40 |Male  |220100 |
+|15 |2               |23 |Male  |7500   |
+|16 |4               |27 |Female|87000  |
+|17 |10              |34 |Female|930000 |
+|18 |15              |54 |Female|7900000|
+|19 |2               |21 |Male  |15000  |
+|20 |10              |36 |Male  |330000 |
++---+----------------+---+------+-------+
+
+
+
+val emp_sal_dept_df = emp_sal_df.join(emp_dept_df, emp_sal_df("ID") === emp_dept_df("ID"), "inner")
+
+emp_sal_dept_df.show(false)
++---+----------------+---+------+-------+---+---------+---------+---------------+
+|ID |Experience_Years|Age|Gender|Salary |ID |Dept_name|location |travel_required|
++---+----------------+---+------+-------+---+---------+---------+---------------+
+|1  |5               |28 |Female|250000 |1  |HR       |Pune     |yes            |
+|2  |1               |21 |Male  |50000  |2  |Finance  |Bangalore|no             |
+|3  |3               |23 |Female|170000 |3  |Finance  |Bangalore|no             |
+|4  |2               |22 |Male  |25000  |4  |Finance  |Pune     |no             |
+|5  |1               |17 |Male  |10000  |5  |Tech     |Mumbai   |no             |
+|6  |25              |62 |Male  |5001000|6  |Tech     |Pune     |no             |
+|7  |19              |54 |Female|800000 |7  |Tech     |Bangalore|yes            |
+|8  |2               |21 |Female|9000   |8  |HR       |Bangalore|no             |
+|9  |10              |36 |Female|61500  |9  |HR       |Pune     |no             |
+|10 |15              |54 |Female|650000 |10 |HR       |Pune     |no             |
+|11 |4               |26 |Female|250000 |11 |HR       |Mumbai   |no             |
+|12 |6               |29 |Male  |1400000|12 |HR       |Mumbai   |yes            |
+|13 |14              |39 |Male  |6000050|13 |Finance  |Bangalore|yes            |
+|14 |11              |40 |Male  |220100 |14 |Tech     |Bangalore|yes            |
+|15 |2               |23 |Male  |7500   |15 |Tech     |Mumbai   |yes            |
+|16 |4               |27 |Female|87000  |16 |Tech     |Pune     |yes            |
+|17 |10              |34 |Female|930000 |17 |Tech     |Bangalore|no             |
+|18 |15              |54 |Female|7900000|18 |Finance  |Mumbai   |no             |
+|19 |2               |21 |Male  |15000  |19 |HR       |Mumbai   |no             |
+|20 |10              |36 |Male  |330000 |20 |Finance  |Bangalore|no             |
++---+----------------+---+------+-------+---+---------+---------+---------------+
+
+
+val emp_deptwise_sal_df = emp_sal_dept_df.groupBy("Dept_name").sum("Salary")
+
+emp_deptwise_sal_df.show(false)
++---------+-----------+
+|Dept_name|sum(Salary)|
++---------+-----------+
+|HR       |23498500   |
+|Finance  |19490050   |
+|Tech     |29081600   |
++---------+-----------+
+
+val emp_genderwise_count_df = emp_sal_dept_df.groupBy("Gender").count()
+
+emp_genderwise_count_df.show(false)
++------+-----+
+|Gender|count|
++------+-----+
+|Female|18   |
+|Male  |17   |
++------+-----+
+

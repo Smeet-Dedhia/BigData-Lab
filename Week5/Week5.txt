@@ -1,0 +1,31 @@
+pig -x local
+fd = LOAD '/home/hdoop/food.csv' using PigStorage(',');
+dump fd;
+
+fd = LOAD '/home/hdoop/food.csv' using PigStorage(',') AS Country;
+
+fd = LOAD '/home/hdoop/food.csv' using PigStorage(',') AS (Country,State);
+
+fr = foreach fd generate State;
+
+LOAD
+fd = LOAD '/home/hdoop/Downloads/earthquakes.csv' using PigStorage(',') AS (DATETIME:chararray, LAT:int, LONG:int, DEPTH:int, MAGNITUDE:int);
+
+FOREACH
+fr = foreach fd generate MAGNITUDE;
+
+DUMP
+DUMP fr;
+
+FILTER
+x = FILTER fd BY LAT > 6;
+
+DISTINCT
+x = DISTINCT fr;
+
+ORDER
+x = ORDER fd BY MAGNITUDE;
+
+STORE
+STORE fd INTO 'output' USING PigStorage(',');
+

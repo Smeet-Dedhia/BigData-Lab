@@ -1,0 +1,92 @@
+
+#1 To Enter into Hive: cd /usr/local/hive/Apache-hive-3.1.2-bin
+#2 To initiate Schema: bin/schematool -dbType derby -initSchema
+#3 If error: rm -Rf metastore_db
+#4 To Start the Server: bin/hiveserver2
+
+Wait until 3 Hive Session ID Generated
+Open New Terminal
+#1 Enter into Hive: cd /usr/local/hive/Apache-hive-3.1.2-bin
+#2 Go to Beeline Hive: bin/beeline -n hdoop -u jdbc:hive2://localhost:10000
+Start Writing Code to Create Databases and Tables.
+
+#1: create database hospital;
+
+#2: show databases;
++----------------+
+| database_name  |
++----------------+
+| default        |
+| hospital       |
++----------------+
+
+#3: create table if not exists hospital_employee (Ename string, ID int, Address string, Department string, Salary string,  Shift int) 
+  comment 'Employee Details'
+  row format delimited
+  fields terminated by '\t'
+  lines terminated by '\n';
+  
+#4: describe hospital_employee;
++-------------+------------+----------+
+|  col_name   | data_type  | comment  |
++-------------+------------+----------+
+| ename       | string     |          |
+| id          | int        |          |
+| address     | string     |          |
+| department  | string     |          |
+| salary      | string     |          |
+| shift       | int        |          |
++-------------+------------+----------+
+
+#5: load data local inpath '/home/hdoop/hospital_employee.txt'
+    overwrite into table hospital_employee;
+
+#6: select id,ename,address from hospital_employee;
++--------------------------+-----------------------+----------------------------+-------------------------------+---------------------------+--------------------------+
+| hospital_employee.ename  | hospital_employee.id  | hospital_employee.address  | hospital_employee.department  | hospital_employee.salary  | hospital_employee.shift  |
++--------------------------+-----------------------+----------------------------+-------------------------------+---------------------------+--------------------------+
+| A                        | 1                     | abc                        | ent                           | 2000                      | 1                        |
+| B                        | 2                     | bcd                        | ent                           | 2000                      | 2                        |
+| C                        | 3                     | cde                        | ent                           | 2000                      | 3                        |
+| D                        | 4                     | def                        | cardio                        | 3000                      | 1                        |
+| E                        | 5                     | efg                        | cardio                        | 3000                      | 2                        |
+| F                        | 6                     | fgh                        | cardio                        | 3000                      | 3                        |
++--------------------------+-----------------------+----------------------------+-------------------------------+---------------------------+--------------------------+
+
+
+create table if not exists dept(
+. . . . . . . . . . . . . . . .> Ename string,
+. . . . . . . . . . . . . . . .> ID int,
+. . . . . . . . . . . . . . . .> deptNo int)
+. . . . . . . . . . . . . . . .> row format delimited
+. . . . . . . . . . . . . . . .> fields terminated by '\t'
+. . . . . . . . . . . . . . . .> lines terminated by '\n';
+
+
+describe dept;
+
++-----------+------------+----------+
+| col_name  | data_type  | comment  |
++-----------+------------+----------+
+| ename     | string     |          |
+| id        | int        |          |
+| deptno    | int        |          |
++-----------+------------+----------+
+
+load data local inpath '/home/hdoop/Downloads/Smeet/dept.txt'
+. . . . . . . . . . . . . . . .> overwrite into table dept;
+
++-------------+----------+--------------+
+| dept.ename  | dept.id  | dept.deptno  |
++-------------+----------+--------------+
+| A           | 1        | 1            |
+| B           | 2        | 1            |
+| C           | 3        | 2            |
+| D           | 4        | 2            |
+| E           | 5        | 3            |
++-------------+----------+--------------+
+
+select d.ID,h.ename,d.deptno
+. . . . . . . . . . . . . . . .> from hospital_emp h join dept d
+. . . . . . . . . . . . . . . .> on (h.ename = d.ename);
+

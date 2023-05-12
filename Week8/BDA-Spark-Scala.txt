@@ -1,0 +1,118 @@
+//Q1] Currying Function
+
+import org.apache.spark.sql.functions._
+
+object CurryingExample {
+  def main(args: Array[String]) {
+    
+    // Define curried functions for addition and multiplication
+    val add: Int => Int => Int = x => y => x + y
+    def sum (num1 : Int)(num2 : Int) : Int = num1 + num2
+    val multiply: Int => Int => Int = x => y => x * y
+    def prod (num1 : Int)(num2 : Int) : Int = num1*num2
+    
+    // Define two numbers to add and multiply
+    val num1 = 5
+    val num2 = 10
+    
+    // Use curried functions to add and multiply the two numbers
+    val resultAdd = add(num1)(num2)
+    val resultMultiply = multiply(num1)(num2)
+    
+    // Print the results
+    println(s"Addition of $num1 and $num2 is: $resultAdd")
+    println(s"Multiplication of $num1 and $num2 is: $resultMultiply")
+  }
+}
+
+
+//Q2] Partial Function (orElse,andThen)
+
+//In Scala
+
+val Sqrt: PartialFunction[Double,Double] = {
+	case d: Double if d > 0 => Math.sqrt(d)
+}
+
+val list: List[Double] = List(2,4,16,-9)
+
+list.map(Math.sqrt)
+
+list.collect(Sqrt)
+
+
+//Q3] Overloading in Scala
+
+object OverloadingExample {
+  def add(x: Int, y: Int): Int = {
+    x + y
+  }
+
+  def add(x: Double, y: Double): Double = {
+    x + y
+  }
+
+  def add(x: Int, y: Int, z: Int): Int = {
+    x + y + z
+  }
+
+  def main(args: Array[String]): Unit = {
+    val sum1 = add(2, 3)
+    val sum2 = add(2.5, 3.5)
+    val sum3 = add(1,2,3)
+
+    println("Sum of integers: " + sum1)
+    println("Sum of doubles: " + sum2)
+    println("Sum of 3 numbers: " + sum3)
+  }
+}
+
+
+// Multiple Nested Functions
+
+
+  def fibonacci(n: Int): Int = {
+    
+    def fibHelper(n: Int, a: Int, b: Int): Int = {
+      if (n == 0) a
+      else if (n == 1) b
+      else fibHelper(n-1, b, a+b)
+    }
+    
+    fibHelper(n, 0, 1)
+  }
+
+  fibonacci(10)
+
+//Pyspark
+
+from pyspark import SparkContext
+from functools import partial
+from pyspark.sql.functions import when, sqrt
+from operator import add
+
+if __name__ == "__main__":
+	sc = SparkContext("local", "myProgram")
+	sc.setLogLevel("ERROR")
+
+	data = sc.textFile("path")
+
+	//sc.parallelize(list)
+	//data.map(lambda function)
+	//data.flatmap(lambda function)
+	//data.filter(lambda function)
+	//data.countByValue()
+
+	//nums = sc.parallelize([1, 2, 3, 4, 5])
+	//adding = nums.reduce(add)
+
+	def Sqrt(x):
+		return (when(x>0, sqrt(x))
+			.when(x==0, 0)
+
+	mylist = [2,4,16,-9]
+
+	sc.stop()
+
+
+spark-submit file.py

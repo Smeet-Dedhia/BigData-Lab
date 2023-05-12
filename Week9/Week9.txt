@@ -1,0 +1,41 @@
+//Create 4 different types of dataframes
+
+
+
+val rdd = sc.parallelize(
+  Seq(
+    ("John", "Manager", 38),
+    ("Mary", "Director", 45),
+    ("Sally", "Engineer", 30)
+  )
+)
+
+//RDD 
+
+val df = rdd.toDF("Name", "Job", "Age")
+
+df1 = spark.createDataFrame(rdd)
+
+//with schema
+
+val rowRDD:RDD[Row] = rdd.map(t => Row(t._1, t._2, t._3))
+
+val schema = new StructType()
+  .add(StructField("Name", StringType, false))
+  .add(StructField("Job", StringType, true))
+  .add(StructField("Age", IntegerType, true))
+
+val df2:DataFrame = spark.createDataFrame(rowRDD, schema)  
+
+//with csv
+val df3 = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("/Smeet-200968236/Department_Dataset.csv")
+
+df3.printSchema()
+
+//with load
+val usersDF = spark.read.load("examples/src/main/resources/users.parquet")
+usersDF.select("name", "favorite_color").write.save("namesAndFavColors.parquet")
+
+df4 = spark.read.format("csv").option("header", "true").load("csvfile.csv")
+
+//"file:///usr/lib/spark/examples/src/main/resources/people.json"

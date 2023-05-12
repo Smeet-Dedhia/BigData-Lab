@@ -1,0 +1,23 @@
+words = sc.textFile("/user/in").flatMap(lambda line: line.split(" "))
+a = words.map(lambda word: (word, 1))b 
+b = a.reduceByKey(lambda a,b: a+b)
+b.collect()
+
+ 
+
+from pyspark import SparkContext
+if __name__ == "__main__":
+    sc = SparkContext("local", "word count")
+    sc.setLogLevel("ERROR")
+
+ 
+
+    lines = sc.textFile("/user/in")
+    words = lines.flatMap(lambda line: line.split(" "))
+    wc = words.countByValue()
+    for word, count in wc.items():
+        print("{}:{}".format(word, count))
+    sc.stop()
+spark-submit wc.py
+
+

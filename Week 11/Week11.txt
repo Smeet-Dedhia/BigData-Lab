@@ -1,0 +1,9 @@
+create table emp_part (ID int, Experience_Years int, Age int, Salary int)
+. . . . . . . . . . . . . . . .> partitioned by (Gender string)
+. . . . . . . . . . . . . . . .> row format delimited
+. . . . . . . . . . . . . . . .> fields terminated by ','
+. . . . . . . . . . . . . . . .> TBLPROPERTIES ("skip.header.line.count"="1");
+
+
+load data local inpath 'file:///home/hdoop/hospital_employee.csv'
+    overwrite into table hospital_employee partition(Gender="Male");
